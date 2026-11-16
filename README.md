@@ -1,98 +1,66 @@
-# Ridge Regression Optimality in Lean 4
+# Ridge Regression Optimality — STAT 4052 Lean 4 Project
 
-**STAT 4052 | Fall 2026 | Midterm Lean 4 project**
+This repository contains a Lean 4 formalization of a **one-predictor ridge regression model without an intercept**, using any finite number of real-valued observations. The proof verifies that the closed-form ridge coefficient globally minimizes squared error plus an L2 penalty.
 
-This project formalizes the **one-predictor, no-intercept** case of ridge
-regression for any finite real-valued dataset. It proves that, when the penalty
-`lam` is strictly positive, the explicit ridge coefficient minimizes the
-sum of squared residuals plus the squared-coefficient penalty.
+## Mathematical statement
 
-## Mathematical result
+Let `n : ℕ`, `x y : Fin n → ℝ`, and `lam : ℝ` with `0 < lam`. For any real coefficient `beta`, define
 
-Given any `n : ℕ`, predictors `x : Fin n → ℝ`, responses `y : Fin n → ℝ`,
-regularization `lam > 0`, and a candidate coefficient `beta : ℝ`, define
-
-```
-J(beta) = Σ_i (y_i - x_i * beta)^2 + lam * beta^2
-A       = Σ_i x_i^2 + lam
-B       = Σ_i x_i*y_i
+```text
+J(beta) = ∑ i, (y i - x i * beta)^2 + lam * beta^2
+A       = ∑ i, (x i)^2 + lam
+B       = ∑ i, (x i) * (y i)
 beta*   = B / A
 ```
 
-The Lean file establishes `A > 0`, the exact identity
-`J(beta) - J(beta*) = A * (beta - beta*)^2`, and hence
-`J(beta*) ≤ J(beta)` for every real `beta`.
+The proof establishes `A > 0` and the **exact completion-of-the-square identity**
 
-## Main file and theorem names
+```text
+J(beta) - J(beta*) = A * (beta - beta*)^2.
+```
 
-- `RidgeOptimality.lean`
-- `RidgeOptimality.ridgeLoss_expand`: expands the sample loss to a quadratic.
-- `RidgeOptimality.denominator_pos`: shows `A > 0` under `lam > 0`.
-- `RidgeOptimality.ridgeCoefficient_normal`: verifies `A * beta* = B`.
-- `RidgeOptimality.ridgeLoss_gap`: proves the square-completion identity.
-- `RidgeOptimality.ridgeCoefficient_minimizes`: proves global optimality.
+Since the right-hand side is nonnegative, `J(beta*) ≤ J(beta)` for every real `beta`.
 
-## External inputs / axioms
+## Formalized results
 
-**No additional external axioms are used beyond the stated theorem hypotheses
-and the standard Lean/mathlib foundations.** The only mathematical hypothesis
-of the main theorem is `lam > 0`; the dataset is arbitrary. Supporting tactics
-and theorems (`ring`, `field_simp`, finite-sum lemmas, positivity of squares,
-`linarith`) are provided by mathlib, not newly declared axioms.
+All results are in [`RidgeOptimality.lean`](RidgeOptimality.lean), in namespace `RidgeOptimality`:
 
-## Reproduce the build
+- `ridgeLoss_expand` — expand the actual residual-squares objective as a quadratic.
+- `denominator_pos` — prove the positive denominator when `lam > 0`.
+- `ridgeCoefficient_normal` — establish the candidate's normal equation.
+- `ridgeLoss_gap` — establish the exact objective-gap identity.
+- **`ridgeCoefficient_minimizes`** — prove global optimality for all finite samples and all real candidate coefficients.
 
-1. Install [elan](https://github.com/leanprover/elan) to obtain Lean and Lake.
-2. From the repository root, run:
+## Assumptions and external axioms
 
-   ```bash
-   lake update
-   lake exe cache get
-   lake build
-   ```
+The mathematical hypothesis is `lam > 0`. Predictors and responses are arbitrary finite real-valued sequences; there is no assumed noise distribution, probability model, or invertibility condition on the data. The single-predictor/no-intercept form defines the scope of the model.
 
-3. For direct checking of the submitted source file, run:
+**No additional external axioms are used beyond the stated theorem hypotheses and the standard Lean/mathlib foundations.** The development relies on proved mathlib lemmas and tactics, including finite-sum identities, positivity of squares, `ring`, `field_simp`, and `linarith`. It introduces no `axiom`, `sorry`, or `admit` declarations.
 
-   ```bash
-   lake env lean RidgeOptimality.lean
-   ```
+## Reproduce the proof check
 
-The `lean-toolchain` file pins Lean **4.35.0**. `lakefile.toml` pins mathlib to
-**v4.35.0**. The GitHub Actions workflow also attempts to build the project
-on every push and pull request. After first setup, commit the generated
-`lake-manifest.json` to preserve the complete transitive dependency lock.
+Install [elan](https://github.com/leanprover/elan), which installs the pinned Lean toolchain, then run from the repository root:
 
-**Verification status:** GitHub Actions successfully compiled the project with
-Lean 4.35.0 and mathlib v4.35.0, checked `RidgeOptimality.lean` directly,
-and passed the unfinished-proof check on commit
-`dbd32b09a2465216e7558965d7d2696542b4f794`
-([successful run](https://github.com/BenjyHF/Midterm-Lean-4-Project/actions/runs/43913961561)).
-The final report must cite the actual submission commit and must be updated
-after subsequent changes. A later successful CI run supersedes this reference.
+```bash
+lake exe cache get
+lake build
+lake env lean RidgeOptimality.lean
+```
 
-## Scope
+The committed [`lean-toolchain`](lean-toolchain) pins **Lean 4.35.0**; [`lakefile.toml`](lakefile.toml) requests **mathlib v4.35.0**, and the committed [`lake-manifest.json`](lake-manifest.json) locks the exact dependency Git commits. **Do not run `lake update` when reproducing this exact version**, as updating may change the dependency lock. The [GitHub Actions workflow](.github/workflows/lean.yml) checks the committed source on pushes and pull requests.
 
-The result holds for any finite number of observations but **one predictor
-only**, with **no intercept** and a **strictly positive** penalty. It is a
-finite-sample algebraic minimization theorem. It does not establish out-of-
-sample performance, an optimal penalty choice, or the full multivariate
-ridge-regression matrix formula. No probability or noise-model assumptions
-are made.
+[View GitHub Actions verification runs](../../actions/workflows/lean.yml). The instructor should inspect the successful run corresponding to the **exact commit SHA identified in the PDF report**.
 
-## AI-use disclosure
+## Verified scope and limitations
 
-OpenAI ChatGPT (GPT-6) was used to help select and state the theorem, draft
-the Lean proof, explain its mathematics, create the README and report,
-and package the files. Team members are responsible for reading the proof,
-executing the Lean build, and confirming the submitted version.
+Lean checks a **finite-sample algebraic minimization theorem** for one predictor, with no intercept, and `lam > 0`. The formalization does **not** establish out-of-sample improvement, an optimal tuning parameter, a probability model, or the multivariable matrix-form ridge estimator.
+
+## AI assistance
+
+OpenAI ChatGPT (GPT-6) was used to help state the theorem, draft and debug the Lean code, prepare the mathematical explanation and README, and configure CI. The team must review the proof and comply with the course syllabus's AI-disclosure requirements.
 
 ## References
 
-1. Hoerl, A. E., and Kennard, R. W. (1970). “Ridge Regression: Biased
-   Estimation for Nonorthogonal Problems.” *Technometrics* 12(1), 55–67.
-   https://doi.org/10.1080/00401706.1970.10488634
-2. Hastie, T., Tibshirani, R., and Friedman, J. (2009). *The Elements of
-   Statistical Learning*, 2nd ed., Section 3.4.1, equations (3.41)–(3.44).
-   Springer. https://hastie.su.domains/ElemStatLearn/
-3. Lean/mathlib community. Mathlib repository and documentation.
-   https://github.com/leanprover-community/mathlib4
+1. Hoerl, A. E., and Kennard, R. W. (1970), “Ridge Regression: Biased Estimation for Nonorthogonal Problems,” *Technometrics* **12**(1), 55–67. https://doi.org/10.1080/00401706.1970.10488634
+2. Hastie, T., Tibshirani, R., and Friedman, J. (2009), *The Elements of Statistical Learning*, 2nd ed., §3.4.1, eqs. (3.41)–(3.44). https://hastie.su.domains/ElemStatLearn/
+3. Mathlib community, *mathlib4* repository. https://github.com/leanprover-community/mathlib4
