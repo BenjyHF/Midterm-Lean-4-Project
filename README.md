@@ -83,8 +83,7 @@ are made.
 OpenAI ChatGPT (GPT-6) was used to help select and state the theorem, draft
 the Lean proof, explain its mathematics, create the README and report,
 and package the files. Team members are responsible for reading the proof,
-executing the Lean build, and confirming the submitted version. Check your
-course syllabus for any additional disclosure requirements.
+executing the Lean build, and confirming the submitted version.
 
 ## References
 
