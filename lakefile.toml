@@ -1,0 +1,16 @@
+name = "RidgeOptimality"
+version = "0.1.0"
+keywords = ["statistics", "regression", "optimization", "ridge"]
+defaultTargets = ["RidgeOptimality"]
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.35.0"
+
+[[lean_lib]]
+name = "RidgeOptimality"
