@@ -9,25 +9,21 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source
+      - name: Checkout submitted source and dependency lock
         uses: actions/checkout@v4
-      - name: Install elan (Lean toolchain manager)
+      - name: Install Lean toolchain manager
         run: |
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Generate dependency manifest
-        run: |
-          lake update
-          echo '=== BEGIN LAKE MANIFEST ==='
-          cat lake-manifest.json
-          echo '=== END LAKE MANIFEST ==='
+      - name: Confirm pinned dependency manifest
+        run: test -f lake-manifest.json
       - name: Retrieve precompiled mathlib cache
         run: lake exe cache get
-      - name: Compile the main Lean project
+      - name: Compile main Lean project
         run: lake build
-      - name: Check the submitted Lean proof directly
+      - name: Check the submitted Lean source directly
         run: lake env lean RidgeOptimality.lean
-      - name: Reject unfinished proofs
+      - name: Reject unfinished proof placeholders
         run: |
           if grep -nE '\b(sorry|admit)\b' RidgeOptimality.lean; then
             echo "An unfinished proof placeholder was found"
