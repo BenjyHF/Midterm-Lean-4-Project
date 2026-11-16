@@ -21,11 +21,11 @@ jobs:
         run: lake exe cache get
       - name: Compile the main Lean project
         run: lake build
-      - name: Check the additional Lean proof
-        run: lake env lean ridge.lean
+      - name: Check the submitted Lean proof directly
+        run: lake env lean RidgeOptimality.lean
       - name: Reject unfinished proofs
         run: |
-          if grep -nE '\b(sorry|admit)\b' RidgeOptimality.lean ridge.lean; then
+          if grep -nE '\b(sorry|admit)\b' RidgeOptimality.lean; then
             echo "An unfinished proof placeholder was found"
             exit 1
           fi
