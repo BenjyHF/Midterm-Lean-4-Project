@@ -62,12 +62,13 @@ The `lean-toolchain` file pins Lean **4.35.0**. `lakefile.toml` pins mathlib to
 on every push and pull request. After first setup, commit the generated
 `lake-manifest.json` to preserve the complete transitive dependency lock.
 
-**Verification status:** The files in the downloadable starter package were
-authored without a local Lean executable or internet access in the artifact
-runtime. The Lean proof has not been compiled in that runtime. Do not submit
-until the commands above or the GitHub Actions workflow complete successfully.
-If the build reports an error, correct it and rerun the build before finalizing
-report claims.
+**Verification status:** GitHub Actions successfully compiled the project with
+Lean 4.35.0 and mathlib v4.35.0, checked `RidgeOptimality.lean` directly,
+and passed the unfinished-proof check on commit
+`dbd32b09a2465216e7558965d7d2696542b4f794`
+([successful run](https://github.com/BenjyHF/Midterm-Lean-4-Project/actions/runs/43913961561)).
+The final report must cite the actual submission commit and must be updated
+after subsequent changes. A later successful CI run supersedes this reference.
 
 ## Scope
 
