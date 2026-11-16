@@ -1,0 +1,25 @@
+name: Lean 4 verification
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Lean and build project
+        uses: leanprover/lean-action@v1
+        with:
+          use-mathlib-cache: true
+      - name: Check other Lean source
+        run: lake env lean ridge.lean
+      - name: Reject sorry/admit
+        run: |
+          if grep -nE '\b(sorry|admit)\b' RidgeOptimality.lean ridge.lean; then
+            echo 'Proof contains a placeholder'
+            exit 1
+          fi
