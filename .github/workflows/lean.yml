@@ -11,15 +11,23 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Set up Lean and build project
+      - name: Install Lean toolchain
         uses: leanprover/lean-action@v1
         with:
-          use-mathlib-cache: true
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+      - name: Generate dependency manifest
+        run: lake update
+      - name: Retrieve compiled mathlib cache
+        run: lake exe cache get
+      - name: Compile submitted Lean project
+        run: lake build
       - name: Check other Lean source
         run: lake env lean ridge.lean
-      - name: Reject sorry/admit
+      - name: Reject unfinished proof placeholders
         run: |
           if grep -nE '\b(sorry|admit)\b' RidgeOptimality.lean ridge.lean; then
-            echo 'Proof contains a placeholder'
+            echo "An unfinished proof was found"
             exit 1
           fi
