@@ -11,23 +11,21 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Install Lean toolchain
-        uses: leanprover/lean-action@v1
-        with:
-          auto-config: false
-          use-github-cache: false
-          use-mathlib-cache: false
+      - name: Install elan (Lean toolchain manager)
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
       - name: Generate dependency manifest
         run: lake update
-      - name: Retrieve compiled mathlib cache
+      - name: Retrieve precompiled mathlib cache
         run: lake exe cache get
-      - name: Compile submitted Lean project
+      - name: Compile the main Lean project
         run: lake build
-      - name: Check other Lean source
+      - name: Check the additional Lean proof
         run: lake env lean ridge.lean
-      - name: Reject unfinished proof placeholders
+      - name: Reject unfinished proofs
         run: |
           if grep -nE '\b(sorry|admit)\b' RidgeOptimality.lean ridge.lean; then
-            echo "An unfinished proof was found"
+            echo "An unfinished proof placeholder was found"
             exit 1
           fi
