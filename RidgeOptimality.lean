@@ -41,7 +41,7 @@ theorem ridgeLoss_expand {n : ℕ} (x y : Fin n → ℝ) (lam beta : ℝ) :
   calc
     (∑ i : Fin n, (y i - x i * beta) ^ 2) + lam * beta ^ 2 =
       (∑ i : Fin n,
-        (x i) ^ 2 * beta ^ 2 - (x i * y i) * (2 * beta) + (y i) ^ 2) +
+        ((x i) ^ 2 * beta ^ 2 - (x i * y i) * (2 * beta) + (y i) ^ 2)) +
           lam * beta ^ 2 := by
       congr 1
       apply Finset.sum_congr rfl
