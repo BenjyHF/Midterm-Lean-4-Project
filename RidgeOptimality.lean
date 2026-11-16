@@ -72,7 +72,7 @@ theorem ridgeCoefficient_normal {n : ℕ} (x y : Fin n → ℝ) (lam : ℝ)
   have hne : denominator x lam ≠ 0 :=
     ne_of_gt (denominator_pos x lam hlam)
   unfold ridgeCoefficient
-  field_simp [hne] <;> ring
+  field_simp [hne]
 
 /-- Exact completion-of-the-square identity: the objective gap is a
     positive coefficient times a squared difference. -/
